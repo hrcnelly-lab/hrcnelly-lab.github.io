@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI 여행 앨범 메이커</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .drag-area-highlight {
+            background-color: #e0f2fe; /* light blue */
+            border-color: #0284c7; /* sky blue */
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .loader {
+            border-top-color: #38bdf8;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #modal-content {
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex items-center justify-center min-h-screen p-4">
+
+    <div class="container mx-auto max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden" style="height: 90vh;">
+        <!-- Header -->
+        <header class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+            <div class="flex items-center space-x-3">
+                <svg class="w-8 h-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="m15 12-3 3 3 3"/></svg>
+                <h1 class="text-2xl font-bold text-slate-700">Gemini AI 여행 앨범 메이커</h1>
+            </div>
+            <button id="export-button" class="hidden bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                <span>앨범으로 내보내기</span>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow flex flex-col items-center justify-center p-8 transition-all duration-500" id="main-content">
+
+            <!-- Upload Section -->
+            <div id="upload-section" class="w-full max-w-2xl text-center">
+                <div id="drag-area" class="border-4 border-dashed border-slate-300 rounded-2xl p-12 transition-all duration-300 hover:border-sky-400 hover:bg-sky-50">
+                    <div class="flex flex-col items-center space-y-4">
+                        <svg class="w-20 h-20 text-slate-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                        <p class="text-xl text-slate-600">여기에 사진을 드래그 앤 드롭하세요</p>
+                        <p class="text-slate-500">또는</p>
+                        <input type="file" id="file-input" multiple accept="image/*" class="hidden">
+                        <label for="file-input" class="cursor-pointer bg-white border border-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg hover:bg-slate-100 transition-all">
+                            파일 선택하기
+                        </label>
+                        <p class="text-sm text-slate-400 pt-4">최대 60장의 이미지를 업로드할 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="progress-section" class="hidden w-full max-w-lg text-center">
+                <div class="flex items-center justify-center space-x-3 mb-4">
+                     <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-200 h-12 w-12"></div>
+                     <h2 class="text-2xl font-semibold text-slate-700">Gemini가 사진을 분석하고 있습니다...</h2>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-4 my-4 overflow-hidden">
+                    <div id="progress-bar" class="bg-sky-400 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p id="progress-text" class="text-slate-500">사진의 날짜와 내용을 분석하는 중입니다.</p>
+                <p id="progress-details" class="text-sm text-slate-400 mt-2"></p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-section" class="hidden w-full h-full flex overflow-hidden">
+                 <!-- Sidebar for navigation -->
+                 <aside class="w-64 p-6 bg-slate-50 border-r border-slate-200 overflow-y-auto custom-scrollbar">
+                    <h3 class="text-lg font-bold mb-4 text-slate-600">카테고리 필터</h3>
+                    <nav id="category-nav" class="space-y-2">
+                        <!-- Dynamic category links will be inserted here -->
+                    </nav>
+                    <div class="mt-8 pt-6 border-t border-slate-200">
+                         <h3 class="text-lg font-bold mb-4 text-slate-600">여행 일정</h3>
+                         <nav id="date-nav" class="space-y-2">
+                            <!-- Dynamic date links will be inserted here -->
+                         </nav>
+                    </div>
+                 </aside>
+
+                 <!-- Photo gallery -->
+                 <div id="gallery" class="flex-1 p-8 overflow-y-auto custom-scrollbar">
+                     <!-- Dynamic content will be inserted here -->
+                 </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal for notifications -->
+    <div id="notification-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center transform transition-all" id="modal-content">
+            <p id="notification-message" class="text-lg text-slate-700 mb-6"></p>
+            <button id="notification-close" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-8 rounded-lg transition-colors">확인</button>
+        </div>
+    </div>
+
+
+    <script>
+        const dragArea = document.getElementById('drag-area');
+        const fileInput = document.getElementById('file-input');
+        const uploadSection = document.getElementById('upload-section');
+        const progressSection = document.getElementById('progress-section');
+        const resultsSection = document.getElementById('results-section');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const progressDetails = document.getElementById('progress-details');
+        const exportButton = document.getElementById('export-button');
+        const gallery = document.getElementById('gallery');
+        const categoryNav = document.getElementById('category-nav');
+        const dateNav = document.getElementById('date-nav');
+        const notificationModal = document.getElementById('notification-modal');
+        const notificationMessage = document.getElementById('notification-message');
+        const notificationClose = document.getElementById('notification-close');
+        const modalContent = document.getElementById('modal-content');
+
+        const MAX_FILES = 60;
+        let uploadedPhotos = [];
+
+        // --- Modal/Notification Functions ---
+        function showNotification(message) {
+            notificationMessage.textContent = message;
+            notificationModal.classList.remove('hidden');
+            modalContent.classList.remove('opacity-0', 'scale-95');
+        }
+
+        function hideNotification() {
+             modalContent.classList.add('opacity-0', 'scale-95');
+             setTimeout(() => {
+                notificationModal.classList.add('hidden');
+             }, 300);
+        }
+
+        notificationClose.addEventListener('click', hideNotification);
+        notificationModal.addEventListener('click', (e) => {
+            if (e.target === notificationModal) {
+                hideNotification();
+            }
+        });
+
+        // --- Drag and Drop Events ---
+        dragArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragArea.classList.add('drag-area-highlight');
+        });
+        dragArea.addEventListener('dragleave', () => {
+            dragArea.classList.remove('drag-area-highlight');
+        });
+        dragArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragArea.classList.remove('drag-area-highlight');
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
+
+        // --- File Input Event ---
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            const imageFiles = files.filter(file => file.type.startsWith('image/'));
+            if (imageFiles.length === 0) {
+                showNotification('이미지 파일만 업로드할 수 있습니다.');
+                return;
+            }
+            if (imageFiles.length > MAX_FILES) {
+                showNotification(`사진은 최대 ${MAX_FILES}장까지 업로드할 수 있습니다.`);
+                imageFiles.splice(MAX_FILES);
+            }
+            startAnalysis(imageFiles);
+        }
+
+        async function startAnalysis(files) {
+            uploadSection.classList.add('hidden');
+            progressSection.classList.remove('hidden');
+            exportButton.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+            
+            uploadedPhotos = [];
+            let completed = 0;
+            const total = files.length;
+            const startTime = Date.now();
+
+            const analysisPromises = files.map((file, index) => {
+                return new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const photoData = {
+                            id: `photo-${Date.now()}-${index}`,
+                            name: file.name,
+                            src: e.target.result,
+                        };
+                        
+                        const analysisResult = await getPhotoMetadata(file);
+                        uploadedPhotos.push({ ...photoData, ...analysisResult });
+
+                        completed++;
+                        const progress = Math.round((completed / total) * 100);
+                        const elapsedTime = (Date.now() - startTime) / 1000;
+                        const estimatedTime = (elapsedTime / completed) * (total - completed);
+
+                        progressBar.style.width = `${progress}%`;
+                        progressText.textContent = `분석 진행 중... (${completed}/${total})`;
+                        progressDetails.textContent = `예상 소요 시간: ${Math.round(estimatedTime)}초`;
+                        
+                        resolve();
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            await Promise.all(analysisPromises);
+
+            progressText.textContent = "분석 완료! 앨범을 생성합니다.";
+            progressDetails.textContent = "";
+            
+            setTimeout(() => {
+                displayResults();
+            }, 1000);
+        }
+
+        function getPhotoMetadata(file) {
+             return new Promise(resolve => {
+                EXIF.getData(file, function() {
+                    const exifDateStr = EXIF.getTag(this, "DateTimeOriginal");
+                    let finalDate;
+
+                    if (exifDateStr) {
+                        // Format from "YYYY:MM:DD HH:MM:SS" to "YYYY-MM-DD"
+                        finalDate = exifDateStr.split(" ")[0].replace(/:/g, "-");
+                    } else {
+                        // Fallback to file's last modified date if EXIF is missing
+                        const dateObj = new Date(file.lastModified);
+                        const year = dateObj.getFullYear();
+                        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                        const day = String(dateObj.getDate()).padStart(2, '0');
+                        finalDate = `${year}-${month}-${day}`;
+                    }
+
+                    // --- Simulated Gemini analysis for category/tags ---
+                    const categories = ['음식', '풍경', '인물', '건축물', '야경', '기타'];
+                    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+                    const captions = {
+                        '음식': '맛있어 보이는 음식 사진', '풍경': '아름다운 자연 풍경', '인물': '여행의 즐거운 순간',
+                        '건축물': '웅장하고 멋진 건축물', '야경': '화려하게 빛나는 도시의 밤', '기타': '여행의 특별한 기록'
+                    };
+                    const tags = {
+                        '음식': ['#먹스타그램', '#맛집탐방'], '풍경': ['#여행사진', '#자연'], '인물': ['#추억', '#인생샷'],
+                        '건축물': ['#도시여행', '#랜드마크'], '야경': ['#야경명소', '#도시의밤'], '기타': ['#감성사진', '#여행기록']
+                    };
+
+                    resolve({
+                        category: randomCategory,
+                        caption: captions[randomCategory] || '여행의 기록',
+                        tags: tags[randomCategory] || ['#여행'],
+                        date: finalDate,
+                    });
+                });
+            });
+        }
+
+
+        function displayResults() {
+            progressSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            exportButton.classList.remove('hidden');
+
+            // --- 1. Process Categories for Filtering ---
+            const allCategories = [...new Set(uploadedPhotos.map(p => p.category))];
+            const categoryOrder = ['음식', '풍경', '인물', '건축물', '야경', '기타'];
+            allCategories.sort((a, b) => {
+                let indexA = categoryOrder.indexOf(a);
+                let indexB = categoryOrder.indexOf(b);
+                if(indexA === -1) indexA = categoryOrder.length;
+                if(indexB === -1) indexB = categoryOrder.length;
+                return indexA - indexB;
+            });
+            
+            categoryNav.innerHTML = '';
+            allCategories.forEach(category => {
+                const navLink = document.createElement('a');
+                navLink.href = `#`; // Click handled by JS
+                navLink.dataset.category = category;
+                navLink.className = 'block px-4 py-2 text-slate-600 font-medium rounded-md hover:bg-sky-100 hover:text-sky-600 transition-colors';
+                navLink.textContent = category;
+                categoryNav.appendChild(navLink);
+            });
+
+            // --- 2. Process Dates for Itinerary ---
+            const allDates = [...new Set(uploadedPhotos.map(p => p.date))].sort();
+            dateNav.innerHTML = '';
+            allDates.forEach((date, index) => {
+                const navLink = document.createElement('a');
+                navLink.href = `#date-${date}`;
+                navLink.className = 'block px-4 py-2 text-slate-600 font-medium rounded-md hover:bg-sky-100 hover:text-sky-600 transition-colors';
+                navLink.textContent = `${index + 1}일차 (${date})`;
+                dateNav.appendChild(navLink);
+            });
+
+            // --- 3. Generate Gallery grouped by Date ---
+            gallery.innerHTML = '';
+            allDates.forEach((date, index) => {
+                const section = document.createElement('div');
+                section.id = `date-${date}`;
+                section.className = 'mb-12 scroll-mt-8'; // scroll-mt for better anchor scrolling
+
+                const sectionTitle = document.createElement('h2');
+                sectionTitle.className = 'text-3xl font-bold text-slate-800 mb-6 pb-2 border-b-2 border-sky-300';
+                sectionTitle.textContent = `${index + 1}일차: ${date}`;
+                section.appendChild(sectionTitle);
+
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6';
+
+                const photosOnDate = uploadedPhotos.filter(p => p.date === date);
+                photosOnDate.forEach(photo => {
+                    const photoCard = createPhotoCard(photo, allCategories);
+                    grid.appendChild(photoCard);
+                });
+                section.appendChild(grid);
+                gallery.appendChild(section);
+            });
+        }
+        
+        function createPhotoCard(photo, allCategories) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-all duration-300 group';
+            card.dataset.id = photo.id;
+            card.dataset.category = photo.category;
+
+            card.innerHTML = `
+                <div class="relative">
+                    <img src="${photo.src}" alt="${photo.caption}" class="w-full h-48 object-cover">
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
+                </div>
+                <div class="p-4 space-y-3">
+                    <input type="text" value="${photo.caption}" data-field="caption" class="w-full border-b-2 border-slate-200 focus:border-sky-400 outline-none text-md font-semibold p-1" placeholder="캡션 수정...">
+                    <div class="flex items-center space-x-2">
+                         <span class="text-sm font-medium text-slate-500">분류:</span>
+                         <select data-field="category" class="text-sm bg-slate-100 border-none rounded-md px-2 py-1 focus:ring-2 focus:ring-sky-300 outline-none">
+                             ${allCategories.map(cat => `<option value="${cat}" ${cat === photo.category ? 'selected' : ''}>${cat}</option>`).join('')}
+                         </select>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        ${photo.tags.map(tag => `<span class="bg-slate-200 text-slate-600 px-2 py-1 rounded-full">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+            
+            card.querySelector('input[data-field="caption"]').addEventListener('change', (e) => updatePhotoData(photo.id, 'caption', e.target.value));
+            card.querySelector('select[data-field="category"]').addEventListener('change', (e) => {
+                 const newCategory = e.target.value;
+                 updatePhotoData(photo.id, 'category', newCategory);
+                 card.dataset.category = newCategory; // Update for filtering
+            });
+
+            return card;
+        }
+
+        function updatePhotoData(photoId, field, value) {
+            const photo = uploadedPhotos.find(p => p.id === photoId);
+            if (photo) {
+                photo[field] = value;
+            }
+        }
+        
+        // --- Category Click Handler ---
+        categoryNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (e.target.tagName !== 'A') return;
+
+            const category = e.target.dataset.category;
+            const allCards = gallery.querySelectorAll('.group');
+
+            // Manage active link style
+            categoryNav.querySelectorAll('a').forEach(a => a.classList.remove('bg-sky-100', 'text-sky-600'));
+            e.target.classList.add('bg-sky-100', 'text-sky-600');
+            
+            // Remove existing "Show All" button before filtering
+            const existingBtn = document.getElementById('show-all-btn');
+            if(existingBtn) existingBtn.remove();
+            
+            // Dim non-matching cards, highlight matching ones
+            allCards.forEach(card => {
+                card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                if(card.dataset.category === category) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                } else {
+                    card.style.opacity = '0.3';
+                    card.style.transform = 'scale(0.95)';
+                }
+            });
+            
+            // Add a "Show All" button to reset the filter
+            const showAllBtn = document.createElement('a');
+            showAllBtn.id = 'show-all-btn';
+            showAllBtn.href = '#';
+            showAllBtn.className = 'block px-4 py-2 mt-4 text-center bg-slate-200 text-slate-700 font-medium rounded-md hover:bg-slate-300 transition-colors';
+            showAllBtn.textContent = '전체 보기';
+            categoryNav.appendChild(showAllBtn);
+
+            showAllBtn.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                allCards.forEach(card => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                });
+                categoryNav.querySelectorAll('a').forEach(a => a.classList.remove('bg-sky-100', 'text-sky-600'));
+                showAllBtn.remove();
+            });
+        });
+
+
+        exportButton.addEventListener('click', () => {
+             const albumHTML = generateAlbumHTML();
+             const blob = new Blob([albumHTML], { type: 'text/html' });
+             const url = URL.createObjectURL(blob);
+             const a = document.createElement('a');
+             a.href = url;
+             a.download = 'my-travel-album.html';
+             document.body.appendChild(a);
+             a.click();
+             document.body.removeChild(a);
+             URL.revokeObjectURL(url);
+        });
+
+        function generateAlbumHTML() {
+            const allDates = [...new Set(uploadedPhotos.map(p => p.date))].sort();
+            
+            let bodyContent = '';
+            allDates.forEach((date, index) => {
+                const photosOnDate = uploadedPhotos.filter(p => p.date === date);
+                bodyContent += `
+                    <section class="mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-sky-300">${index + 1}일차: ${date}</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            ${photosOnDate.map(photo => `
+                                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                                    <img src="${photo.src}" alt="${photo.caption}" class="w-full h-56 object-cover">
+                                    <div class="p-4">
+                                        <p class="font-semibold text-gray-700">${photo.caption}</p>
+                                        <div class="mt-2 flex flex-wrap gap-2 text-xs">
+                                             <span class="bg-sky-100 text-sky-700 px-2 py-1 rounded-full">${photo.category}</span>
+                                             ${photo.tags.map(tag => `<span class="bg-gray-200 text-gray-600 px-2 py-1 rounded-full">${tag}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </section>
+                `;
+            });
+            
+            return `
+                <!DOCTYPE html>
+                <html lang="ko">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>나의 여행 앨범</title>
+                    <script src="https://cdn.tailwindcss.com"><\/script>
+                    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+                    <style> body { font-family: 'Noto Sans KR', sans-serif; } </style>
+                </head>
+                <body class="bg-gray-100">
+                    <div class="container mx-auto p-8">
+                        <header class="text-center mb-12">
+                            <h1 class="text-5xl font-extrabold text-gray-800">나의 특별한 여행 앨범</h1>
+                            <p class="text-gray-500 mt-2">Gemini AI와 함께 만든 추억의 기록</p>
+                        </header>
+                        <main>${bodyContent}</main>
+                        <footer class="text-center mt-12 py-6 border-t">
+                             <p class="text-gray-500">Generated by Gemini AI Travel Album Maker</p>
+                        </footer>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+    </script>
+</body>
+</html>
