@@ -41,90 +41,116 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 flex items-center justify-center min-h-screen p-4">
+<body class="bg-slate-100 text-slate-800 flex items-center justify-center min-h-screen sm:p-4">
 
-    <div class="container mx-auto max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden" style="height: 90vh;">
+    <div class="container mx-auto w-full h-screen sm:h-auto sm:min-h-[90vh] max-w-6xl bg-white sm:rounded-2xl sm:shadow-2xl flex flex-col overflow-hidden">
         <!-- Header -->
-        <header class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <header class="p-4 sm:p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 flex-shrink-0">
             <div class="flex items-center space-x-3">
-                <svg class="w-8 h-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="m15 12-3 3 3 3"/></svg>
-                <h1 class="text-2xl font-bold text-slate-700">Gemini AI 여행 앨범 메이커</h1>
+                 <button id="menu-toggle-button" class="hidden md:hidden p-2 rounded-md hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <svg class="w-6 h-6 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                 </button>
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="m15 12-3 3 3 3"/></svg>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-700">Gemini AI 여행 앨범 메이커</h1>
+                </div>
             </div>
-            <button id="export-button" class="hidden bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2">
+            <button id="export-button" class="hidden bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-3 sm:px-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                <span>앨범으로 내보내기</span>
+                <span class="hidden sm:inline">앨범으로 내보내기</span>
             </button>
         </header>
 
         <!-- Main Content -->
-        <main class="flex-grow flex flex-col items-center justify-center p-8 transition-all duration-500" id="main-content">
-
-            <!-- Upload Section -->
-            <div id="upload-section" class="w-full max-w-2xl text-center">
-                <div id="drag-area" class="border-4 border-dashed border-slate-300 rounded-2xl p-12 transition-all duration-300 hover:border-sky-400 hover:bg-sky-50">
-                    <div class="flex flex-col items-center space-y-4">
-                        <svg class="w-20 h-20 text-slate-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                        <p class="text-xl text-slate-600">여기에 사진을 드래그 앤 드롭하세요</p>
-                        <p class="text-slate-500">또는</p>
-                        <input type="file" id="file-input" multiple accept="image/*" class="hidden">
-                        <label for="file-input" class="cursor-pointer bg-white border border-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg hover:bg-slate-100 transition-all">
-                            파일 선택하기
-                        </label>
-                        <p class="text-sm text-slate-400 pt-4">최대 60장의 이미지를 업로드할 수 있습니다.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Progress Section -->
-            <div id="progress-section" class="hidden w-full max-w-lg text-center">
-                <div class="flex items-center justify-center space-x-3 mb-4">
-                     <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-200 h-12 w-12"></div>
-                     <h2 class="text-2xl font-semibold text-slate-700">Gemini가 사진을 분석하고 있습니다...</h2>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-4 my-4 overflow-hidden">
-                    <div id="progress-bar" class="bg-sky-400 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-                <p id="progress-text" class="text-slate-500">사진의 날짜와 내용을 분석하는 중입니다.</p>
-                <p id="progress-details" class="text-sm text-slate-400 mt-2"></p>
-            </div>
-
-            <!-- Results Section -->
-            <div id="results-section" class="hidden w-full h-full flex overflow-hidden">
-                 <!-- Sidebar for navigation -->
-                 <aside class="w-64 p-6 bg-slate-50 border-r border-slate-200 overflow-y-auto custom-scrollbar">
+        <div class="flex-grow flex relative overflow-hidden">
+            <!-- Sidebar for navigation -->
+            <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"></div>
+            <aside id="sidebar" class="hidden fixed inset-y-0 left-0 z-40 w-72 bg-slate-50 border-r border-slate-200 overflow-y-auto custom-scrollbar transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:w-64 md:translate-x-0 md:flex-shrink-0 flex flex-col p-6">
+                <div class="flex-grow">
                     <h3 class="text-lg font-bold mb-4 text-slate-600">카테고리 필터</h3>
                     <nav id="category-nav" class="space-y-2">
-                        <!-- Dynamic category links will be inserted here -->
+                        <!-- Dynamic category links -->
                     </nav>
                     <div class="mt-8 pt-6 border-t border-slate-200">
                          <h3 class="text-lg font-bold mb-4 text-slate-600">여행 일정</h3>
                          <nav id="date-nav" class="space-y-2">
-                            <!-- Dynamic date links will be inserted here -->
+                            <!-- Dynamic date links -->
                          </nav>
+                         <button id="filter-reset-button" class="hidden w-full text-center mt-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-3 rounded-lg transition-all">필터 초기화</button>
                     </div>
-                 </aside>
+                </div>
+                 <div class="flex-shrink-0 pt-6 mt-6 border-t border-slate-200">
+                    <div id="sidebar-actions" class="space-y-3">
+                         <input type="file" id="add-files-input" multiple accept="image/*" class="hidden">
+                         <label for="add-files-input" class="cursor-pointer w-full text-center block bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-3 rounded-lg transition-all">
+                             사진 추가하기
+                         </label>
+                         <button id="reset-album-button" class="w-full text-center block bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-3 rounded-lg transition-all">
+                             새로 시작하기
+                         </button>
+                    </div>
+                </div>
+            </aside>
 
-                 <!-- Photo gallery -->
-                 <div id="gallery" class="flex-1 p-8 overflow-y-auto custom-scrollbar">
-                     <!-- Dynamic content will be inserted here -->
-                 </div>
-            </div>
+            <main class="flex-grow flex flex-col items-center justify-center p-4 sm:p-8 transition-all duration-500 w-full overflow-y-auto custom-scrollbar" id="main-content">
+                <!-- Upload Section -->
+                <div id="upload-section" class="w-full max-w-2xl text-center">
+                    <div id="drag-area" class="border-4 border-dashed border-slate-300 rounded-2xl p-6 sm:p-12 transition-all duration-300 hover:border-sky-400 hover:bg-sky-50">
+                        <div class="flex flex-col items-center space-y-4">
+                            <svg class="w-16 h-16 sm:w-20 sm:h-20 text-slate-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                            <p class="text-lg sm:text-xl text-slate-600">여기에 사진을 드래그 앤 드롭하세요</p>
+                            <p class="text-slate-500">또는</p>
+                            <input type="file" id="file-input" multiple accept="image/*" class="hidden">
+                            <label for="file-input" class="cursor-pointer bg-white border border-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg hover:bg-slate-100 transition-all">
+                                파일 선택하기
+                            </label>
+                            <p class="text-sm text-slate-400 pt-4">최대 60장의 이미지를 업로드할 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
 
-        </main>
+                <!-- Progress Section -->
+                <div id="progress-section" class="hidden w-full max-w-lg text-center">
+                    <div class="flex items-center justify-center space-x-3 mb-4">
+                         <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-200 h-12 w-12"></div>
+                         <h2 class="text-xl sm:text-2xl font-semibold text-slate-700">Gemini가 사진을 분석하고 있습니다...</h2>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-4 my-4 overflow-hidden">
+                        <div id="progress-bar" class="bg-sky-400 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-text" class="text-slate-500">사진의 날짜와 내용을 분석하는 중입니다.</p>
+                    <p id="progress-details" class="text-sm text-slate-400 mt-2"></p>
+                </div>
+
+                <!-- Results Section (Gallery) -->
+                <div id="results-section" class="hidden w-full h-full">
+                     <div id="gallery" class="w-full">
+                         <!-- Dynamic content will be inserted here -->
+                     </div>
+                </div>
+            </main>
+        </div>
     </div>
 
     <!-- Modal for notifications -->
     <div id="notification-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center transform transition-all" id="modal-content">
             <p id="notification-message" class="text-lg text-slate-700 mb-6"></p>
-            <button id="notification-close" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-8 rounded-lg transition-colors">확인</button>
+            <div id="modal-buttons" class="flex justify-center gap-4">
+                <button id="notification-confirm" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">확인</button>
+                <button id="notification-cancel" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-6 rounded-lg transition-colors">취소</button>
+            </div>
         </div>
     </div>
 
 
     <script>
+        // DOM Elements
         const dragArea = document.getElementById('drag-area');
         const fileInput = document.getElementById('file-input');
+        const addFilesInput = document.getElementById('add-files-input');
         const uploadSection = document.getElementById('upload-section');
         const progressSection = document.getElementById('progress-section');
         const resultsSection = document.getElementById('results-section');
@@ -137,15 +163,129 @@
         const dateNav = document.getElementById('date-nav');
         const notificationModal = document.getElementById('notification-modal');
         const notificationMessage = document.getElementById('notification-message');
-        const notificationClose = document.getElementById('notification-close');
         const modalContent = document.getElementById('modal-content');
+        const notificationConfirm = document.getElementById('notification-confirm');
+        const notificationCancel = document.getElementById('notification-cancel');
+        const menuToggleButton = document.getElementById('menu-toggle-button');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const resetAlbumButton = document.getElementById('reset-album-button');
+        const filterResetButton = document.getElementById('filter-reset-button');
 
         const MAX_FILES = 60;
         let uploadedPhotos = [];
+        let activeCategoryFilter = null;
+        let activeDateFilter = null;
+
+        // --- IndexedDB Helper ---
+        const db = {
+            _db: null,
+            init: function() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('TravelAlbumDB', 1);
+                    request.onupgradeneeded = event => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains('photos')) {
+                            db.createObjectStore('photos', { keyPath: 'id' });
+                        }
+                    };
+                    request.onsuccess = event => {
+                        this._db = event.target.result;
+                        resolve();
+                    };
+                    request.onerror = event => {
+                        console.error('IndexedDB error:', event.target.errorCode);
+                        reject(event.target.errorCode);
+                    };
+                });
+            },
+            savePhotos: function(photos) {
+                return new Promise((resolve, reject) => {
+                    if (!this._db) return reject('DB not initialized');
+                    const transaction = this._db.transaction(['photos'], 'readwrite');
+                    const store = transaction.objectStore('photos');
+                    const clearRequest = store.clear();
+                    clearRequest.onsuccess = () => {
+                        if (photos.length === 0) { resolve(); return; }
+                        let count = 0;
+                        photos.forEach(photo => {
+                            const addRequest = store.add(photo);
+                            addRequest.onsuccess = () => {
+                                count++;
+                                if (count === photos.length) resolve();
+                            };
+                            addRequest.onerror = (event) => reject(event.target.error);
+                        });
+                    };
+                    clearRequest.onerror = (event) => reject(event.target.error);
+                });
+            },
+            getPhotos: function() {
+                return new Promise((resolve, reject) => {
+                    if (!this._db) return reject('DB not initialized');
+                    const transaction = this._db.transaction(['photos'], 'readonly');
+                    const store = transaction.objectStore('photos');
+                    const request = store.getAll();
+                    request.onsuccess = event => resolve(event.target.result);
+                    request.onerror = event => reject(event.target.error);
+                });
+            },
+            clearPhotos: function() {
+                return new Promise((resolve, reject) => {
+                    if (!this._db) return reject('DB not initialized');
+                    const transaction = this._db.transaction(['photos'], 'readwrite');
+                    const store = transaction.objectStore('photos');
+                    const request = store.clear();
+                    request.onsuccess = () => resolve();
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+        };
+
+
+        // --- App Initialization ---
+        document.addEventListener('DOMContentLoaded', async () => {
+             try {
+                await db.init();
+                const savedPhotos = await db.getPhotos();
+                if (Array.isArray(savedPhotos) && savedPhotos.length > 0) {
+                    uploadedPhotos = savedPhotos;
+                    uploadSection.classList.add('hidden');
+                    displayResults();
+                }
+            } catch(e) {
+                console.error("Failed to load photos from DB:", e);
+                showNotification("저장된 앨범을 불러오는 데 실패했습니다.");
+            }
+        });
+
+        // --- Mobile Sidebar Logic ---
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        }
+        menuToggleButton.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
 
         // --- Modal/Notification Functions ---
         function showNotification(message) {
             notificationMessage.textContent = message;
+            notificationConfirm.textContent = '확인';
+            notificationConfirm.onclick = hideNotification;
+            notificationCancel.classList.add('hidden');
+            notificationModal.classList.remove('hidden');
+            modalContent.classList.remove('opacity-0', 'scale-95');
+        }
+        
+        function showConfirmation(message, onConfirm) {
+            notificationMessage.textContent = message;
+            notificationConfirm.textContent = '확인';
+            notificationCancel.classList.remove('hidden');
+            notificationConfirm.onclick = () => {
+                hideNotification();
+                onConfirm();
+            };
+            notificationCancel.onclick = hideNotification;
             notificationModal.classList.remove('hidden');
             modalContent.classList.remove('opacity-0', 'scale-95');
         }
@@ -156,80 +296,120 @@
                 notificationModal.classList.add('hidden');
              }, 300);
         }
-
-        notificationClose.addEventListener('click', hideNotification);
+        
         notificationModal.addEventListener('click', (e) => {
-            if (e.target === notificationModal) {
-                hideNotification();
-            }
+            if (e.target === notificationModal) hideNotification();
         });
-
-        // --- Drag and Drop Events ---
-        dragArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dragArea.classList.add('drag-area-highlight');
+        
+        // --- File Handling & Drag n Drop ---
+        ['dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dragArea.addEventListener(eventName, e => e.preventDefault());
         });
-        dragArea.addEventListener('dragleave', () => {
-            dragArea.classList.remove('drag-area-highlight');
-        });
+        dragArea.addEventListener('dragover', () => dragArea.classList.add('drag-area-highlight'));
+        dragArea.addEventListener('dragleave', () => dragArea.classList.remove('drag-area-highlight'));
         dragArea.addEventListener('drop', (e) => {
-            e.preventDefault();
             dragArea.classList.remove('drag-area-highlight');
-            const files = Array.from(e.dataTransfer.files);
-            handleFiles(files);
+            handleFiles(Array.from(e.dataTransfer.files), false);
         });
+        fileInput.addEventListener('change', (e) => handleFiles(Array.from(e.target.files), false));
+        addFilesInput.addEventListener('change', (e) => handleFiles(Array.from(e.target.files), true));
 
-        // --- File Input Event ---
-        fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            handleFiles(files);
-        });
-
-        function handleFiles(files) {
+        async function handleFiles(files, isAdding) {
             const imageFiles = files.filter(file => file.type.startsWith('image/'));
             if (imageFiles.length === 0) {
                 showNotification('이미지 파일만 업로드할 수 있습니다.');
                 return;
             }
-            if (imageFiles.length > MAX_FILES) {
-                showNotification(`사진은 최대 ${MAX_FILES}장까지 업로드할 수 있습니다.`);
-                imageFiles.splice(MAX_FILES);
+
+            const currentCount = isAdding ? uploadedPhotos.length : 0;
+            if (currentCount + imageFiles.length > MAX_FILES) {
+                showNotification(`총 사진 개수가 ${MAX_FILES}장을 초과할 수 없습니다. (현재: ${currentCount}장)`);
+                return;
             }
-            startAnalysis(imageFiles);
+
+            if (!isAdding) {
+                uploadedPhotos = [];
+                activeCategoryFilter = null;
+                activeDateFilter = null;
+            }
+
+            // Pre-read files to check for duplicates
+            const readFileAsDataURL = (file) => {
+                return new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve({ file, src: e.target.result });
+                    reader.readAsDataURL(file);
+                });
+            };
+
+            const fileReadPromises = imageFiles.map(readFileAsDataURL);
+            const readFiles = await Promise.all(fileReadPromises);
+
+            const existingSrcs = new Set(uploadedPhotos.map(p => p.src));
+            const newUniqueFiles = [];
+            let duplicateFileCount = 0;
+
+            readFiles.forEach(({ file, src }) => {
+                if (existingSrcs.has(src)) {
+                    duplicateFileCount++;
+                } else {
+                    newUniqueFiles.push(file);
+                    existingSrcs.add(src); // Also check against newly added files
+                }
+            });
+
+            if (duplicateFileCount > 0) {
+                if (newUniqueFiles.length > 0) {
+                    const message = `${duplicateFileCount}개의 중복된 사진을 제외하고, ${newUniqueFiles.length}개의 새로운 사진을 추가하시겠습니까?`;
+                    showConfirmation(message, () => {
+                        startAnalysis(newUniqueFiles);
+                    });
+                } else {
+                    showNotification(`${duplicateFileCount}개의 사진이 모두 중복되어 추가할 사진이 없습니다.`);
+                }
+            } else {
+                if (newUniqueFiles.length > 0) {
+                    startAnalysis(newUniqueFiles);
+                }
+            }
         }
 
+
+        // --- Main Analysis Logic ---
         async function startAnalysis(files) {
+            if (files.length === 0) return;
+
             uploadSection.classList.add('hidden');
-            progressSection.classList.remove('hidden');
-            exportButton.classList.add('hidden');
             resultsSection.classList.add('hidden');
-            
-            uploadedPhotos = [];
+            progressSection.classList.remove('hidden');
+            sidebar.classList.add('hidden');
+            menuToggleButton.classList.add('hidden');
+            exportButton.classList.add('hidden');
+
             let completed = 0;
             const total = files.length;
-            const startTime = Date.now();
+            
+            const newlyAnalyzedPhotos = [];
 
             const analysisPromises = files.map((file, index) => {
                 return new Promise(resolve => {
                     const reader = new FileReader();
                     reader.onload = async (e) => {
-                        const photoData = {
+                        const imageSrc = e.target.result;
+                        const analysisResult = await getPhotoMetadata(file, imageSrc);
+
+                        newlyAnalyzedPhotos.push({
                             id: `photo-${Date.now()}-${index}`,
                             name: file.name,
-                            src: e.target.result,
-                        };
-                        
-                        const analysisResult = await getPhotoMetadata(file);
-                        uploadedPhotos.push({ ...photoData, ...analysisResult });
+                            src: imageSrc,
+                            ...analysisResult
+                        });
 
                         completed++;
                         const progress = Math.round((completed / total) * 100);
-                        const elapsedTime = (Date.now() - startTime) / 1000;
-                        const estimatedTime = (elapsedTime / completed) * (total - completed);
-
+                        
                         progressBar.style.width = `${progress}%`;
-                        progressText.textContent = `분석 진행 중... (${completed}/${total})`;
-                        progressDetails.textContent = `예상 소요 시간: ${Math.round(estimatedTime)}초`;
+                        progressText.textContent = `AI 분석 진행 중... (${completed}/${total})`;
                         
                         resolve();
                     };
@@ -238,208 +418,305 @@
             });
 
             await Promise.all(analysisPromises);
-
+            
+            uploadedPhotos = uploadedPhotos.concat(newlyAnalyzedPhotos);
+            
             progressText.textContent = "분석 완료! 앨범을 생성합니다.";
             progressDetails.textContent = "";
             
-            setTimeout(() => {
-                displayResults();
-            }, 1000);
+            setTimeout(displayResults, 1000);
+        }
+        
+        // --- Gemini AI Analysis ---
+        async function analyzeImageWithGemini(imageSrc, mimeType) {
+            const apiKey = ""; // This will be handled by the execution environment.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const base64Data = imageSrc.split(',')[1];
+
+            const prompt = `이 여행 사진을 분석해서 다음 JSON 형식으로 응답해줘: {"category": "카테고리명", "caption": "15자 이내의 짧은 한글 캡션", "tags": ["#한글태그1", "#한글태그2"], "location": "도시/지역 이름"}. 카테고리는 '음식', '풍경', '인물', '건축물', '야경', '기타' 중에서 가장 적절한 것 하나만 선택해줘. location은 사진이 찍힌 도시나 관광지 이름으로 부탁해 (예: "서울", "제주", "부산"). 만약 특정 지역을 알 수 없거나 "실내", "집안" 같은 일반적인 장소라면 "미상"으로 응답해줘.`;
+
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        { inlineData: { mimeType: mimeType, data: base64Data } }
+                    ]
+                }],
+                 generationConfig: {
+                    responseMimeType: "application/json",
+                 }
+            };
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API call failed with status ${response.status}`);
+            }
+
+            const result = await response.json();
+            const text = result.candidates[0].content.parts[0].text;
+            return JSON.parse(text);
         }
 
-        function getPhotoMetadata(file) {
-             return new Promise(resolve => {
+
+        async function getPhotoMetadata(file, imageSrc) {
+            const getDate = () => new Promise(resolve => {
                 EXIF.getData(file, function() {
                     const exifDateStr = EXIF.getTag(this, "DateTimeOriginal");
-                    let finalDate;
-
                     if (exifDateStr) {
-                        // Format from "YYYY:MM:DD HH:MM:SS" to "YYYY-MM-DD"
-                        finalDate = exifDateStr.split(" ")[0].replace(/:/g, "-");
+                        resolve(exifDateStr.split(" ")[0].replace(/:/g, "-"));
                     } else {
-                        // Fallback to file's last modified date if EXIF is missing
-                        const dateObj = new Date(file.lastModified);
-                        const year = dateObj.getFullYear();
-                        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                        const day = String(dateObj.getDate()).padStart(2, '0');
-                        finalDate = `${year}-${month}-${day}`;
+                        const d = new Date(file.lastModified);
+                        resolve(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
                     }
-
-                    // --- Simulated Gemini analysis for category/tags ---
-                    const categories = ['음식', '풍경', '인물', '건축물', '야경', '기타'];
-                    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-                    const captions = {
-                        '음식': '맛있어 보이는 음식 사진', '풍경': '아름다운 자연 풍경', '인물': '여행의 즐거운 순간',
-                        '건축물': '웅장하고 멋진 건축물', '야경': '화려하게 빛나는 도시의 밤', '기타': '여행의 특별한 기록'
-                    };
-                    const tags = {
-                        '음식': ['#먹스타그램', '#맛집탐방'], '풍경': ['#여행사진', '#자연'], '인물': ['#추억', '#인생샷'],
-                        '건축물': ['#도시여행', '#랜드마크'], '야경': ['#야경명소', '#도시의밤'], '기타': ['#감성사진', '#여행기록']
-                    };
-
-                    resolve({
-                        category: randomCategory,
-                        caption: captions[randomCategory] || '여행의 기록',
-                        tags: tags[randomCategory] || ['#여행'],
-                        date: finalDate,
-                    });
                 });
             });
+
+            const date = await getDate();
+
+            try {
+                const analysis = await analyzeImageWithGemini(imageSrc, file.type);
+                const locationBlocklist = ['실내', '집안', '미상'];
+                if (!analysis.location || locationBlocklist.includes(analysis.location)) {
+                    analysis.location = '장소 미확인';
+                }
+                return { ...analysis, date };
+            } catch (error) {
+                console.error("Gemini analysis failed for", file.name, error);
+                // Fallback to a default if AI analysis fails
+                return {
+                    category: '기타',
+                    caption: '여행의 특별한 기록',
+                    tags: ['#여행'],
+                    location: '장소 미확인',
+                    date: date
+                };
+            }
         }
 
 
+        // --- UI Display and Interaction ---
         function displayResults() {
             progressSection.classList.add('hidden');
             resultsSection.classList.remove('hidden');
             exportButton.classList.remove('hidden');
-
-            // --- 1. Process Categories for Filtering ---
-            const allCategories = [...new Set(uploadedPhotos.map(p => p.category))];
-            const categoryOrder = ['음식', '풍경', '인물', '건축물', '야경', '기타'];
-            allCategories.sort((a, b) => {
-                let indexA = categoryOrder.indexOf(a);
-                let indexB = categoryOrder.indexOf(b);
-                if(indexA === -1) indexA = categoryOrder.length;
-                if(indexB === -1) indexB = categoryOrder.length;
-                return indexA - indexB;
-            });
             
-            categoryNav.innerHTML = '';
-            allCategories.forEach(category => {
-                const navLink = document.createElement('a');
-                navLink.href = `#`; // Click handled by JS
-                navLink.dataset.category = category;
-                navLink.className = 'block px-4 py-2 text-slate-600 font-medium rounded-md hover:bg-sky-100 hover:text-sky-600 transition-colors';
-                navLink.textContent = category;
-                categoryNav.appendChild(navLink);
-            });
+            if (uploadedPhotos.length > 0) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('md:flex');
+            } else {
+                sidebar.classList.add('hidden');
+                menuToggleButton.classList.add('hidden');
+                exportButton.classList.add('hidden');
+                uploadSection.classList.remove('hidden');
+                resultsSection.classList.add('hidden');
+            }
+            
+            menuToggleButton.classList.remove('hidden');
 
-            // --- 2. Process Dates for Itinerary ---
+            const allCategories = ['음식', '풍경', '인물', '건축물', '야경', '기타'].filter(c => uploadedPhotos.some(p => p.category === c));
+            categoryNav.innerHTML = allCategories.map(c => `<a href="#" data-category="${c}" class="block px-4 py-2 text-slate-600 font-medium rounded-md hover:bg-sky-100 hover:text-sky-600 transition-colors">${c}</a>`).join('');
+
             const allDates = [...new Set(uploadedPhotos.map(p => p.date))].sort();
-            dateNav.innerHTML = '';
-            allDates.forEach((date, index) => {
-                const navLink = document.createElement('a');
-                navLink.href = `#date-${date}`;
-                navLink.className = 'block px-4 py-2 text-slate-600 font-medium rounded-md hover:bg-sky-100 hover:text-sky-600 transition-colors';
-                navLink.textContent = `${index + 1}일차 (${date})`;
-                dateNav.appendChild(navLink);
-            });
-
-            // --- 3. Generate Gallery grouped by Date ---
-            gallery.innerHTML = '';
-            allDates.forEach((date, index) => {
-                const section = document.createElement('div');
-                section.id = `date-${date}`;
-                section.className = 'mb-12 scroll-mt-8'; // scroll-mt for better anchor scrolling
-
-                const sectionTitle = document.createElement('h2');
-                sectionTitle.className = 'text-3xl font-bold text-slate-800 mb-6 pb-2 border-b-2 border-sky-300';
-                sectionTitle.textContent = `${index + 1}일차: ${date}`;
-                section.appendChild(sectionTitle);
-
-                const grid = document.createElement('div');
-                grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6';
-
+            
+            const getLocationForDate = (date) => {
                 const photosOnDate = uploadedPhotos.filter(p => p.date === date);
-                photosOnDate.forEach(photo => {
-                    const photoCard = createPhotoCard(photo, allCategories);
-                    grid.appendChild(photoCard);
+                if (!photosOnDate.length) return null;
+
+                const locationCounts = photosOnDate.reduce((acc, photo) => {
+                    const loc = photo.location || '장소 미확인';
+                    acc[loc] = (acc[loc] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const topLocation = Object.keys(locationCounts).reduce((a, b) => locationCounts[a] > locationCounts[b] ? a : b);
+                return topLocation !== '장소 미확인' ? topLocation : null;
+            };
+
+            dateNav.innerHTML = allDates.map(date => {
+                const location = getLocationForDate(date);
+                const title = location ? `${date} (${location})` : date;
+                return `<a href="#" data-date="${date}" class="block px-4 py-2 text-slate-600 font-medium rounded-md hover:bg-sky-100 hover:text-sky-600 transition-colors">${title}</a>`;
+            }).join('');
+            
+            const sortedPhotos = uploadedPhotos.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            gallery.innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                    ${sortedPhotos.map(p => createPhotoCardHTML(p, allCategories)).join('')}
+                </div>`;
+
+            addCardEventListeners();
+            applyFilters();
+            savePhotosToDB();
+        }
+        
+        function createPhotoCardHTML(photo, allCategories) {
+            const displayTags = [...photo.tags, `#${photo.date}`];
+            return `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-all duration-300 group" data-id="${photo.id}" data-category="${photo.category}" data-date="${photo.date}">
+                    <div class="relative">
+                        <img src="${photo.src}" alt="${photo.caption}" class="w-full h-48 object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
+                        <button data-delete-id="${photo.id}" class="absolute top-2 right-2 p-1.5 bg-black bg-opacity-40 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none hover:bg-opacity-60 z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <input type="text" value="${photo.caption}" data-field="caption" class="w-full border-b-2 border-slate-200 focus:border-sky-400 outline-none text-md font-semibold p-1" placeholder="캡션 수정...">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-medium text-slate-500">분류:</span>
+                            <select data-field="category" class="text-sm bg-slate-100 border-none rounded-md px-2 py-1 focus:ring-2 focus:ring-sky-300 outline-none">
+                                ${allCategories.map(cat => `<option value="${cat}" ${cat === photo.category ? 'selected' : ''}>${cat}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            ${displayTags.map(tag => `<span class="bg-slate-200 text-slate-600 px-2 py-1 rounded-full">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>`;
+        }
+        
+        function addCardEventListeners() {
+            gallery.querySelectorAll('.group').forEach(card => {
+                card.querySelector('input[data-field="caption"]').addEventListener('change', (e) => updatePhotoData(card.dataset.id, 'caption', e.target.value));
+                card.querySelector('select[data-field="category"]').addEventListener('change', (e) => {
+                    const newCategory = e.target.value;
+                    updatePhotoData(card.dataset.id, 'category', newCategory);
+                    card.dataset.category = newCategory;
                 });
-                section.appendChild(grid);
-                gallery.appendChild(section);
+                 card.querySelector('[data-delete-id]').addEventListener('click', (e) => {
+                    e.stopPropagation(); 
+                    const photoId = e.currentTarget.dataset.deleteId;
+                    showConfirmation('이 사진을 앨범에서 삭제하시겠습니까?', () => {
+                        uploadedPhotos = uploadedPhotos.filter(p => p.id !== photoId);
+                        savePhotosToDB().then(() => {
+                            displayResults();
+                        });
+                    });
+                });
             });
         }
         
-        function createPhotoCard(photo, allCategories) {
-            const card = document.createElement('div');
-            card.className = 'bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-all duration-300 group';
-            card.dataset.id = photo.id;
-            card.dataset.category = photo.category;
-
-            card.innerHTML = `
-                <div class="relative">
-                    <img src="${photo.src}" alt="${photo.caption}" class="w-full h-48 object-cover">
-                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
-                </div>
-                <div class="p-4 space-y-3">
-                    <input type="text" value="${photo.caption}" data-field="caption" class="w-full border-b-2 border-slate-200 focus:border-sky-400 outline-none text-md font-semibold p-1" placeholder="캡션 수정...">
-                    <div class="flex items-center space-x-2">
-                         <span class="text-sm font-medium text-slate-500">분류:</span>
-                         <select data-field="category" class="text-sm bg-slate-100 border-none rounded-md px-2 py-1 focus:ring-2 focus:ring-sky-300 outline-none">
-                             ${allCategories.map(cat => `<option value="${cat}" ${cat === photo.category ? 'selected' : ''}>${cat}</option>`).join('')}
-                         </select>
-                    </div>
-                    <div class="flex flex-wrap gap-2 text-xs">
-                        ${photo.tags.map(tag => `<span class="bg-slate-200 text-slate-600 px-2 py-1 rounded-full">${tag}</span>`).join('')}
-                    </div>
-                </div>
-            `;
-            
-            card.querySelector('input[data-field="caption"]').addEventListener('change', (e) => updatePhotoData(photo.id, 'caption', e.target.value));
-            card.querySelector('select[data-field="category"]').addEventListener('change', (e) => {
-                 const newCategory = e.target.value;
-                 updatePhotoData(photo.id, 'category', newCategory);
-                 card.dataset.category = newCategory; // Update for filtering
-            });
-
-            return card;
-        }
-
         function updatePhotoData(photoId, field, value) {
             const photo = uploadedPhotos.find(p => p.id === photoId);
             if (photo) {
                 photo[field] = value;
+                savePhotosToDB();
             }
         }
         
-        // --- Category Click Handler ---
-        categoryNav.addEventListener('click', (e) => {
+        function handleNavClick(e) {
             e.preventDefault();
-            if (e.target.tagName !== 'A') return;
-
-            const category = e.target.dataset.category;
-            const allCards = gallery.querySelectorAll('.group');
-
-            // Manage active link style
-            categoryNav.querySelectorAll('a').forEach(a => a.classList.remove('bg-sky-100', 'text-sky-600'));
-            e.target.classList.add('bg-sky-100', 'text-sky-600');
+            const link = e.target.closest('a');
+            if (!link) return;
             
-            // Remove existing "Show All" button before filtering
-            const existingBtn = document.getElementById('show-all-btn');
-            if(existingBtn) existingBtn.remove();
-            
-            // Dim non-matching cards, highlight matching ones
-            allCards.forEach(card => {
-                card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                if(card.dataset.category === category) {
-                    card.style.opacity = '1';
-                    card.style.transform = 'scale(1)';
-                } else {
-                    card.style.opacity = '0.3';
-                    card.style.transform = 'scale(0.95)';
+            if (window.innerWidth < 768) { // md breakpoint
+                toggleSidebar();
+            }
+
+            const category = link.dataset.category;
+            const date = link.dataset.date;
+
+            if (category) {
+                 toggleCategoryFilter(category, link);
+            } else if (date) {
+                 toggleDateFilter(date, link);
+            }
+        }
+        
+        categoryNav.addEventListener('click', handleNavClick);
+        dateNav.addEventListener('click', handleNavClick);
+        
+        resetAlbumButton.addEventListener('click', () => {
+             showConfirmation("정말로 현재 앨범을 지우고 새로 시작하시겠습니까?", async () => {
+                try {
+                    await db.clearPhotos();
+                    window.location.reload();
+                } catch(e) {
+                    console.error("Failed to clear DB:", e);
+                    showNotification("앨범을 초기화하는 데 실패했습니다.");
                 }
-            });
-            
-            // Add a "Show All" button to reset the filter
-            const showAllBtn = document.createElement('a');
-            showAllBtn.id = 'show-all-btn';
-            showAllBtn.href = '#';
-            showAllBtn.className = 'block px-4 py-2 mt-4 text-center bg-slate-200 text-slate-700 font-medium rounded-md hover:bg-slate-300 transition-colors';
-            showAllBtn.textContent = '전체 보기';
-            categoryNav.appendChild(showAllBtn);
-
-            showAllBtn.addEventListener('click', (ev) => {
-                ev.preventDefault();
-                allCards.forEach(card => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'scale(1)';
-                });
-                categoryNav.querySelectorAll('a').forEach(a => a.classList.remove('bg-sky-100', 'text-sky-600'));
-                showAllBtn.remove();
             });
         });
 
+        filterResetButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            activeCategoryFilter = null;
+            activeDateFilter = null;
+            
+            dateNav.querySelectorAll('a').forEach(a => a.classList.remove('bg-sky-100', 'text-sky-600'));
+            categoryNav.querySelectorAll('a').forEach(a => a.classList.remove('bg-sky-100', 'text-sky-600'));
 
+            applyFilters();
+        });
+
+        function toggleCategoryFilter(category, link) {
+            if (activeCategoryFilter === category) {
+                activeCategoryFilter = null; // Untoggle
+            } else {
+                activeCategoryFilter = category;
+            }
+            // Update UI
+            categoryNav.querySelectorAll('a').forEach(a => a.classList.remove('bg-sky-100', 'text-sky-600'));
+            if(activeCategoryFilter){
+                link.classList.add('bg-sky-100', 'text-sky-600');
+            }
+            applyFilters();
+        }
+
+        function toggleDateFilter(date, link) {
+            if (activeDateFilter === date) {
+                activeDateFilter = null; // Untoggle
+            } else {
+                activeDateFilter = date;
+            }
+            // Update UI
+            dateNav.querySelectorAll('a').forEach(a => a.classList.remove('bg-sky-100', 'text-sky-600'));
+            if(activeDateFilter){
+                link.classList.add('bg-sky-100', 'text-sky-600');
+            }
+            applyFilters();
+        }
+
+        function applyFilters() {
+            gallery.querySelectorAll('.group').forEach(card => {
+                const categoryMatch = !activeCategoryFilter || card.dataset.category === activeCategoryFilter;
+                const dateMatch = !activeDateFilter || card.dataset.date === activeDateFilter;
+
+                if (categoryMatch && dateMatch) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            if (activeCategoryFilter || activeDateFilter) {
+                filterResetButton.classList.remove('hidden');
+            } else {
+                filterResetButton.classList.add('hidden');
+            }
+        }
+
+
+        // --- Data Persistence ---
+        async function savePhotosToDB() {
+            try {
+                await db.savePhotos(uploadedPhotos);
+            } catch (e) {
+                console.error("Failed to save photos to DB:", e);
+                showNotification("앨범을 저장하는 데 실패했습니다. 브라우저 저장 공간이 부족할 수 있습니다.");
+            }
+        }
+
+        // --- Export Logic ---
         exportButton.addEventListener('click', () => {
              const albumHTML = generateAlbumHTML();
              const blob = new Blob([albumHTML], { type: 'text/html' });
@@ -447,39 +724,29 @@
              const a = document.createElement('a');
              a.href = url;
              a.download = 'my-travel-album.html';
-             document.body.appendChild(a);
              a.click();
-             document.body.removeChild(a);
              URL.revokeObjectURL(url);
         });
 
         function generateAlbumHTML() {
-            const allDates = [...new Set(uploadedPhotos.map(p => p.date))].sort();
-            
-            let bodyContent = '';
-            allDates.forEach((date, index) => {
-                const photosOnDate = uploadedPhotos.filter(p => p.date === date);
-                bodyContent += `
-                    <section class="mb-12">
-                        <h2 class="text-3xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-sky-300">${index + 1}일차: ${date}</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            ${photosOnDate.map(photo => `
-                                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                                    <img src="${photo.src}" alt="${photo.caption}" class="w-full h-56 object-cover">
-                                    <div class="p-4">
-                                        <p class="font-semibold text-gray-700">${photo.caption}</p>
-                                        <div class="mt-2 flex flex-wrap gap-2 text-xs">
-                                             <span class="bg-sky-100 text-sky-700 px-2 py-1 rounded-full">${photo.category}</span>
-                                             ${photo.tags.map(tag => `<span class="bg-gray-200 text-gray-600 px-2 py-1 rounded-full">${tag}</span>`).join('')}
-                                        </div>
-                                    </div>
+            const bodyContent = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    ${uploadedPhotos.sort((a,b) => new Date(a.date) - new Date(b.date)).map(photo => {
+                        const displayTags = [...photo.tags, `#${photo.date}`];
+                        return `
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <img src="${photo.src}" alt="${photo.caption}" class="w-full h-56 object-cover">
+                            <div class="p-4">
+                                <p class="font-semibold text-gray-700">${photo.caption}</p>
+                                <div class="mt-2 flex flex-wrap gap-2 text-xs">
+                                     <span class="bg-sky-100 text-sky-700 px-2 py-1 rounded-full">${photo.category}</span>
+                                     ${displayTags.map(tag => `<span class="bg-gray-200 text-gray-600 px-2 py-1 rounded-full">${tag}</span>`).join('')}
                                 </div>
-                            `).join('')}
-                        </div>
-                    </section>
-                `;
-            });
-            
+                            </div>
+                        </div>`;
+                        }).join('')}
+                </div>`;
+
             return `
                 <!DOCTYPE html>
                 <html lang="ko">
@@ -492,9 +759,9 @@
                     <style> body { font-family: 'Noto Sans KR', sans-serif; } </style>
                 </head>
                 <body class="bg-gray-100">
-                    <div class="container mx-auto p-8">
+                    <div class="container mx-auto p-4 sm:p-8">
                         <header class="text-center mb-12">
-                            <h1 class="text-5xl font-extrabold text-gray-800">나의 특별한 여행 앨범</h1>
+                            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800">나의 특별한 여행 앨범</h1>
                             <p class="text-gray-500 mt-2">Gemini AI와 함께 만든 추억의 기록</p>
                         </header>
                         <main>${bodyContent}</main>
@@ -503,9 +770,9 @@
                         </footer>
                     </div>
                 </body>
-                </html>
-            `;
+                </html>`;
         }
     </script>
 </body>
 </html>
+
