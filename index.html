@@ -57,10 +57,16 @@
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-700">AI 여행 앨범 메이커</h1>
                 </div>
             </div>
-            <button id="export-button" class="hidden bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-3 sm:px-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                <span class="hidden sm:inline">앨범으로 내보내기</span>
-            </button>
+            <div class="flex items-center space-x-2">
+                <button id="export-button" class="hidden bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-3 sm:px-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    <span class="hidden sm:inline">앨범으로 내보내기</span>
+                </button>
+                <button id="slideshow-button" class="hidden bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 sm:px-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <span class="hidden sm:inline">슬라이드쇼 만들기</span>
+                </button>
+            </div>
         </header>
 
         <!-- Main Content -->
@@ -145,6 +151,85 @@
         </div>
     </div>
 
+    <!-- Slideshow Creation Modal -->
+    <div id="slideshow-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-8 shadow-2xl max-w-2xl w-full transform transition-all" id="slideshow-modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">동영상 슬라이드쇼 만들기</h2>
+                <button id="slideshow-close" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Settings Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">사진당 표시 시간</label>
+                        <select id="photo-duration" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                            <option value="2">2초</option>
+                            <option value="3" selected>3초</option>
+                            <option value="4">4초</option>
+                            <option value="5">5초</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">전환 효과</label>
+                        <select id="transition-effect" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                            <option value="fade" selected>페이드</option>
+                            <option value="slide">슬라이드</option>
+                            <option value="zoom">줌</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">배경 음악</label>
+                    <input type="file" id="background-music" accept="audio/*" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                    <p class="text-xs text-slate-500 mt-1">MP3, WAV, OGG 형식 지원 (선택사항)</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">사진 순서</label>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center">
+                            <input type="radio" name="photo-order" value="date" checked class="mr-2">
+                            <span>날짜순</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="photo-order" value="random" class="mr-2">
+                            <span>랜덤</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="photo-order" value="category" class="mr-2">
+                            <span>카테고리별</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Preview Section -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">미리보기</label>
+                    <div id="slideshow-preview" class="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center text-slate-500">
+                        <p>설정을 변경하면 여기에 미리보기가 표시됩니다</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3 mt-8">
+                <button id="slideshow-cancel" class="px-6 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors">취소</button>
+                <button id="slideshow-create" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>슬라이드쇼 생성</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         // DOM Elements
@@ -171,6 +256,18 @@
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const resetAlbumButton = document.getElementById('reset-album-button');
         const filterResetButton = document.getElementById('filter-reset-button');
+        
+        // Slideshow elements
+        const slideshowButton = document.getElementById('slideshow-button');
+        const slideshowModal = document.getElementById('slideshow-modal');
+        const slideshowClose = document.getElementById('slideshow-close');
+        const slideshowCancel = document.getElementById('slideshow-cancel');
+        const slideshowCreate = document.getElementById('slideshow-create');
+        const slideshowModalContent = document.getElementById('slideshow-modal-content');
+        const photoDuration = document.getElementById('photo-duration');
+        const transitionEffect = document.getElementById('transition-effect');
+        const backgroundMusic = document.getElementById('background-music');
+        const slideshowPreview = document.getElementById('slideshow-preview');
 
         const MAX_FILES = 60;
         let uploadedPhotos = [];
@@ -243,6 +340,66 @@
         };
 
 
+        // --- Slideshow Modal Event Listeners ---
+        slideshowButton.addEventListener('click', () => {
+            slideshowModal.classList.remove('hidden');
+            slideshowModalContent.classList.remove('opacity-0', 'scale-95');
+            updateSlideshowPreview();
+        });
+        
+        slideshowClose.addEventListener('click', hideSlideshowModal);
+        slideshowCancel.addEventListener('click', hideSlideshowModal);
+        
+        slideshowModal.addEventListener('click', (e) => {
+            if (e.target === slideshowModal) hideSlideshowModal();
+        });
+        
+        // Update preview when settings change
+        [photoDuration, transitionEffect].forEach(element => {
+            element.addEventListener('change', updateSlideshowPreview);
+        });
+        
+        backgroundMusic.addEventListener('change', updateSlideshowPreview);
+        
+        document.querySelectorAll('input[name="photo-order"]').forEach(radio => {
+            radio.addEventListener('change', updateSlideshowPreview);
+        });
+        
+        slideshowCreate.addEventListener('click', createSlideshow);
+        
+        function hideSlideshowModal() {
+            slideshowModalContent.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                slideshowModal.classList.add('hidden');
+            }, 300);
+        }
+        
+        function updateSlideshowPreview() {
+            const duration = photoDuration.value;
+            const effect = transitionEffect.value;
+            const order = document.querySelector('input[name="photo-order"]:checked').value;
+            const musicFile = backgroundMusic.files[0];
+            
+            let previewText = `설정: ${duration}초/사진, ${effect} 효과, ${getOrderText(order)}`;
+            if (musicFile) {
+                previewText += `, 음악: ${musicFile.name}`;
+            }
+            
+            const totalDuration = Math.round((uploadedPhotos.length * duration) / 60 * 10) / 10;
+            previewText += `\n예상 총 재생 시간: ${totalDuration}분`;
+            
+            slideshowPreview.innerHTML = `<p class="text-sm">${previewText}</p>`;
+        }
+        
+        function getOrderText(order) {
+            switch(order) {
+                case 'date': return '날짜순';
+                case 'random': return '랜덤';
+                case 'category': return '카테고리별';
+                default: return '날짜순';
+            }
+        }
+        
         // --- App Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
              try {
@@ -505,6 +662,7 @@
             progressSection.classList.add('hidden');
             resultsSection.classList.remove('hidden');
             exportButton.classList.remove('hidden');
+            slideshowButton.classList.remove('hidden');
             
             if (uploadedPhotos.length > 0) {
                 sidebar.classList.remove('hidden');
@@ -716,6 +874,223 @@
             }
         }
 
+        // --- Slideshow Creation Logic ---
+        async function createSlideshow() {
+            if (uploadedPhotos.length === 0) {
+                showNotification('업로드된 사진이 없습니다.');
+                return;
+            }
+            
+            try {
+                slideshowCreate.disabled = true;
+                slideshowCreate.innerHTML = '<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">생성 중...</span>';
+                
+                const duration = parseInt(photoDuration.value);
+                const effect = transitionEffect.value;
+                const order = document.querySelector('input[name="photo-order"]:checked').value;
+                const musicFile = backgroundMusic.files[0];
+                
+                // Sort photos based on order
+                let sortedPhotos = [...uploadedPhotos];
+                switch(order) {
+                    case 'date':
+                        sortedPhotos.sort((a, b) => new Date(a.date) - new Date(b.date));
+                        break;
+                    case 'random':
+                        sortedPhotos.sort(() => Math.random() - 0.5);
+                        break;
+                    case 'category':
+                        sortedPhotos.sort((a, b) => a.category.localeCompare(b.category));
+                        break;
+                }
+                
+                // Create slideshow HTML
+                const slideshowHTML = generateSlideshowHTML(sortedPhotos, duration, effect, musicFile);
+                
+                // Download the slideshow
+                const blob = new Blob([slideshowHTML], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'my-travel-slideshow.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                hideSlideshowModal();
+                showNotification('슬라이드쇼가 성공적으로 생성되었습니다!');
+                
+            } catch (error) {
+                console.error('Slideshow creation failed:', error);
+                showNotification('슬라이드쇼 생성에 실패했습니다.');
+            } finally {
+                slideshowCreate.disabled = false;
+                slideshowCreate.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="ml-2">슬라이드쇼 생성</span>';
+            }
+        }
+        
+        async function generateSlideshowHTML(photos, duration, effect, musicFile) {
+            const totalDuration = photos.length * duration;
+            let musicData = null;
+            if (musicFile) {
+                try {
+                    const arrayBuffer = await musicFile.arrayBuffer();
+                    const uint8Array = new Uint8Array(arrayBuffer);
+                    musicData = `data:${musicFile.type};base64,${btoa(String.fromCharCode(...uint8Array))}`;
+                } catch (error) {
+                    console.error('Music file processing failed:', error);
+                }
+            }
+            
+            return `
+                <!DOCTYPE html>
+                <html lang="ko">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>여행 슬라이드쇼</title>
+                    <script src="https://cdn.tailwindcss.com"></script>
+                    <style>
+                        body { font-family: 'Noto Sans KR', sans-serif; }
+                        .slide { opacity: 0; transition: opacity 1s ease-in-out; }
+                        .slide.active { opacity: 1; }
+                        .slide.fade { transition: opacity 1s ease-in-out; }
+                        .slide.slide { transition: transform 1s ease-in-out, opacity 1s ease-in-out; }
+                        .slide.zoom { transition: transform 1s ease-in-out, opacity 1s ease-in-out; }
+                        .controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; }
+                        .progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: #38bdf8; transition: width 0.1s linear; }
+                    </style>
+                </head>
+                <body class="bg-black m-0 p-0 overflow-hidden">
+                    <div class="progress-bar" id="progress-bar"></div>
+                    
+                    <div class="slideshow-container w-full h-screen relative">
+                        ${photos.map((photo, index) => `
+                            <div class="slide absolute inset-0 ${effect}" data-index="${index}">
+                                <img src="${photo.src}" alt="${photo.caption}" class="w-full h-full object-cover">
+                                <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-6">
+                                    <h2 class="text-2xl font-bold mb-2">${photo.caption}</h2>
+                                    <p class="text-lg">${photo.date} • ${photo.category}</p>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        ${photo.tags.map(tag => `<span class="bg-white bg-opacity-20 px-2 py-1 rounded-full text-sm">${tag}</span>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="controls bg-black bg-opacity-50 rounded-full p-2 flex items-center space-x-4">
+                        <button id="play-pause" class="text-white hover:text-sky-400 transition-colors">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </button>
+                        <button id="prev" class="text-white hover:text-sky-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                            </svg>
+                        </button>
+                        <button id="next" class="text-white hover:text-sky-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                            </svg>
+                        </button>
+                        <span id="timer" class="text-white text-sm">0:00 / ${Math.floor(totalDuration / 60)}:${String(totalDuration % 60).padStart(2, '0')}</span>
+                    </div>
+                    
+                    <audio id="background-music" loop>
+                        ${musicData ? `<source src="${musicData}" type="${musicFile.type}">` : ''}
+                    </audio>
+                    
+                    <script>
+                        let currentSlide = 0;
+                        let isPlaying = true;
+                        let slideInterval;
+                        const slides = document.querySelectorAll('.slide');
+                        const totalSlides = slides.length;
+                        const slideDuration = ${duration} * 1000;
+                        const progressBar = document.getElementById('progress-bar');
+                        const playPauseBtn = document.getElementById('play-pause');
+                        const prevBtn = document.getElementById('prev');
+                        const nextBtn = document.getElementById('next');
+                        const timer = document.getElementById('timer');
+                        const music = document.getElementById('background-music');
+                        
+                        function showSlide(index) {
+                            slides.forEach(slide => slide.classList.remove('active'));
+                            slides[index].classList.add('active');
+                            
+                            const progress = ((index + 1) / totalSlides) * 100;
+                            progressBar.style.width = progress + '%';
+                            
+                            const currentTime = Math.floor((index * ${duration}) / 60);
+                            const currentSeconds = Math.floor((index * ${duration}) % 60);
+                            timer.textContent = \`\${currentTime}:\${String(currentSeconds).padStart(2, '0')} / \${Math.floor(${totalDuration} / 60)}:\${String(${totalDuration} % 60).padStart(2, '0')}\`;
+                        }
+                        
+                        function nextSlide() {
+                            currentSlide = (currentSlide + 1) % totalSlides;
+                            showSlide(currentSlide);
+                        }
+                        
+                        function prevSlide() {
+                            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                            showSlide(currentSlide);
+                        }
+                        
+                        function startSlideshow() {
+                            if (slideInterval) clearInterval(slideInterval);
+                            slideInterval = setInterval(nextSlide, slideDuration);
+                        }
+                        
+                        function stopSlideshow() {
+                            if (slideInterval) clearInterval(slideInterval);
+                        }
+                        
+                        function togglePlayPause() {
+                            if (isPlaying) {
+                                stopSlideshow();
+                                playPauseBtn.innerHTML = '<path d="M8 5v14l11-7z"/>';
+                                music.pause();
+                            } else {
+                                startSlideshow();
+                                playPauseBtn.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                                music.play();
+                            }
+                            isPlaying = !isPlaying;
+                        }
+                        
+                        // Event listeners
+                        playPauseBtn.addEventListener('click', togglePlayPause);
+                        prevBtn.addEventListener('click', () => { prevSlide(); stopSlideshow(); });
+                        nextBtn.addEventListener('click', () => { nextSlide(); stopSlideshow(); });
+                        
+                        // Keyboard controls
+                        document.addEventListener('keydown', (e) => {
+                            switch(e.key) {
+                                case 'ArrowLeft': prevSlide(); break;
+                                case 'ArrowRight': nextSlide(); break;
+                                case ' ': togglePlayPause(); break;
+                                case 'Escape': window.close(); break;
+                            }
+                        });
+                        
+                        // Initialize
+                        showSlide(0);
+                        startSlideshow();
+                        if (music.src) music.play();
+                        
+                        // Auto-advance slides
+                        setInterval(() => {
+                            if (isPlaying) nextSlide();
+                        }, slideDuration);
+                    </script>
+                </body>
+                </html>
+            `;
+        }
+        
         // --- Export Logic ---
         exportButton.addEventListener('click', () => {
              const albumHTML = generateAlbumHTML();
