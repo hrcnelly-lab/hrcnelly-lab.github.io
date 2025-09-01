@@ -1,0 +1,24 @@
+# GitHub Pages 설정
+title: Gemini AI 여행 앨범 메이커
+description: AI 기술을 활용하여 여행 사진을 자동으로 분석하고 아름다운 앨범을 만들어주는 웹 애플리케이션
+author: jmisun-lab
+url: "https://jmisun-lab.github.io"
+baseurl: "/my-prototype"
+
+# Jekyll 설정
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# 빌드 설정
+exclude:
+  - .git/
+  - .github/
+  - node_modules/
+  - package.json
+  - package-lock.json
+  - README.md
+
+# 메타데이터
+lang: ko
+locale: ko_KR 
